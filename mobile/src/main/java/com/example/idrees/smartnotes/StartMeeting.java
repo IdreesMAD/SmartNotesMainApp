@@ -1,6 +1,7 @@
 package com.example.idrees.smartnotes;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,19 +9,28 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
 public class StartMeeting extends AppCompatActivity {
 
-    Button select;
+    Button select, back;
     ListView listView;
-    String[] mobileArray = {"Meeting 1","Meeting 2","Meeting 3","Meeting 4",
-            "Meeting 5","Meeting 6","Meeting 7","Meeting 8"};
     ArrayAdapter adapter;
-    Button back;
+
+    String code;
+    String meetingName;
+    ArrayList<String> mobileArray = new ArrayList<String>();
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
     @Override
@@ -34,11 +44,37 @@ public class StartMeeting extends AppCompatActivity {
 
         Intent i = getIntent();
         String value = i.getExtras().getString("key");
+        firebaseData();
 
-        adapter = new ArrayAdapter<String>(this,
-                R.layout.list, mobileArray);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
 
-        listView.setAdapter(adapter);
+                String splitting = adapter.getItem(position).toString();
+
+                String[] splitted = splitting.split(",");
+                for(int i = 0; i <= 3; i++)
+                {
+                    if(i == 3)
+                    {
+                        code = splitted[i].replaceAll("[]]","");
+                        break;
+                    }
+                    else if (i == 0){
+                        meetingName = splitted[i].replaceAll("[/\\[]","");
+                    }
+                }
+                //Toast.makeText(StartMeeting.this, ""+meetingName, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(StartMeeting.this, "Connecting to the users of Meeting "+(position+1), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(StartMeeting.this, ""+code, Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(StartMeeting.this, Connecting.class);
+                i.putExtra("connectCode", ""+meetingName);
+                StartMeeting.this.startActivity(i);
+
+            }
+        });
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,18 +82,26 @@ public class StartMeeting extends AppCompatActivity {
                 StartMeeting.super.finish();
             }
         });
-
-        //listView.setOnItemClickListener((AdapterView.OnItemClickListener) this);
-
-
     }
 
-    public void OnItemClick(AdapterView<?> l, View v, int position, long id)
+    public void firebaseData()
     {
-        Log.i("ListView", "You clicked Item: " + id + " at position:" + position);
-        Intent intent = new Intent();
-        intent.setClass(this, Connecting.class);
-        intent.putExtra("connect", position);
-        startActivity(intent);
+        db.collection("Meetings")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(QueryDocumentSnapshot documentSnapshot : task.getResult()){
+                                //Log.d("Result",documentSnapshot.getId()+"->"+documentSnapshot.getData().get("Meeting_Name"));
+                                mobileArray.add(documentSnapshot.getData().get("Meeting_Name").toString());
+                                adapter = new ArrayAdapter<String>(StartMeeting.this, R.layout.list, mobileArray);
+                                listView.setAdapter(adapter);
+                            }
+                        }else{
+                            Toast.makeText(StartMeeting.this, "Error", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 }

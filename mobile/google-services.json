@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "793803621543",
+    "firebase_url": "https://smartnotes-ef8bb.firebaseio.com",
+    "project_id": "smartnotes-ef8bb",
+    "storage_bucket": "smartnotes-ef8bb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:793803621543:android:c376d5f1d2175dcc",
+        "android_client_info": {
+          "package_name": "com.example.idrees.smartnotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "793803621543-82hlqr66dv6o39jesm97pjfcf3tsi6e3.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "793803621543-82hlqr66dv6o39jesm97pjfcf3tsi6e3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU4RP1Iw5FT0OkIqD6z1VLMO9wNEl9nus"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
